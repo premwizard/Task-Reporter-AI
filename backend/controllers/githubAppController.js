@@ -108,7 +108,7 @@ async function processPushPayload(payload) {
     const committedAt = commit.timestamp ? new Date(commit.timestamp) : new Date();
     const authorUsername = commit.author?.username || commit.committer?.username || 'Unknown Developer';
 
-    let userId = baseUserId;
+    let userId = null;
     let employeeName = authorUsername;
 
     // Resolve committer directly to a user if they exist in the DB

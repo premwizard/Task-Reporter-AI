@@ -51,6 +51,11 @@ export const getActivities = async (req, res) => {
             page || null,
             limit || null
         );
+
+        console.log("Logged-in User ID:", req.user?.id);
+        console.log("Total Commits Fetched:", result.activities.length);
+        console.log("Commit User IDs:", result.activities.map(c => c.user_id || c.employee_name).slice(0, 5));
+
         res.status(200).json(result);
     } catch (error) {
         console.error('[ActivityController] Error in getActivities:', error);

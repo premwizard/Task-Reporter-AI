@@ -107,24 +107,7 @@ async function handleGithubPayload(payload) {
                 employeeName = userQuery.rows[0].github_username;
                 console.log(`   ✨ [User Mapping Success] Found direct match in users table: ID ${userId} (@${employeeName})`);
             } else {
-                console.log(`   ⚠️ [User Mapping Warning] No direct match found in users table for @${githubUsername}. Checking repo connector fallback...`);
-                
-                // Fallback to whoever connected this repository
-                const connQuery = await pool.query(
-                    `SELECT cr.user_id, u.github_username, u.first_name, u.last_name 
-                     FROM connected_repositories cr 
-                     JOIN users u ON cr.user_id = u.id 
-                     WHERE cr.repository_name = $1 LIMIT 1`,
-                    [repoFullName]
-                );
-                
-                if (connQuery.rows.length > 0) {
-                    userId = connQuery.rows[0].user_id;
-                    employeeName = connQuery.rows[0].github_username || `${connQuery.rows[0].first_name} ${connQuery.rows[0].last_name}`;
-                    console.log(`   ✨ [User Mapping Success] Fallback active: Mapped commit to repository connector: ID ${userId} (${employeeName})`);
-                } else {
-                    console.warn(`   ❌ [User Mapping Failure] No connecting user register exists in DB for repository "${repoFullName}".`);
-                }
+                console.log(`   ⚠️ [User Mapping Warning] No direct match found in users table for @${githubUsername}. Leaving user_id as null.`);
             }
         } catch (dbErr) {
             console.error('   ❌ [User Mapping Error] Database query error while checking mappings:', dbErr.message);
