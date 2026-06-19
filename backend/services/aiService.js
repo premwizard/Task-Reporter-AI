@@ -25,10 +25,14 @@ export const generateAISummary = async (activities, employeeName, reportType = '
         }
 
         // Combine raw activities into a clean list for the prompt
-        const rawActivitiesText = activities.map((a, i) => {
+        let rawActivitiesText = activities.map((a, i) => {
             const repo = a.repository_name ? ` (Repo: ${a.repository_name})` : '';
             return `${i + 1}. [${a.source}] ${a.activity}${repo}`;
         }).join('\n');
+        
+        if (rawActivitiesText.length > 20000) {
+            rawActivitiesText = rawActivitiesText.substring(0, 20000) + '\n... (truncated to prevent token limit errors)';
+        }
 
         const targetName = employeeName ? `an employee named ${employeeName}` : 'the engineering team';
         const systemPrompt = `You are a technical engineering manager writing a professional summary of work completed by ${targetName}.

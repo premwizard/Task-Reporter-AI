@@ -107,8 +107,11 @@ export const getAIStandup = async (req, res) => {
       });
     }
 
-    const commitsText = commits.map(c => `- Commit: "${c.activity}" in repo [${c.repository_name}] branch [${c.branch || 'main'}] at ${new Date(c.created_at).toLocaleDateString()}`).join('\n');
-    const prsText = prs.map(p => `- Pull Request: "${p.title}" [State: ${p.state}, Merged: ${p.merged}] in repo [${p.repository_name}] branch [${p.branch}] at ${new Date(p.created_at).toLocaleDateString()}`).join('\n');
+    let commitsText = commits.map(c => `- Commit: "${c.activity}" in repo [${c.repository_name}] branch [${c.branch || 'main'}] at ${new Date(c.created_at).toLocaleDateString()}`).join('\n');
+    let prsText = prs.map(p => `- Pull Request: "${p.title}" [State: ${p.state}, Merged: ${p.merged}] in repo [${p.repository_name}] branch [${p.branch}] at ${new Date(p.created_at).toLocaleDateString()}`).join('\n');
+
+    if (commitsText.length > 20000) commitsText = commitsText.substring(0, 20000) + '\n... (truncated to prevent token limit errors)';
+    if (prsText.length > 10000) prsText = prsText.substring(0, 10000) + '\n... (truncated to prevent token limit errors)';
 
     const systemPrompt = `You are a professional AI Engineering Manager.
 You generate clear, concise, and structured daily standup updates for developers.
