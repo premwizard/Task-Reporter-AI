@@ -15,14 +15,14 @@
     "framer-motion": "^12.40.0",
     "lucide-react": "^0.378.0",
     "qrcode.react": "^3.1.0",
-    "react": "^18.3.1",
+    "react": "^19.2.7",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.1",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
