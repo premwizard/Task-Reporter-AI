@@ -42,6 +42,22 @@ jobs:
   backend-ci:
     name: Backend Startup & Lint
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: backend
@@ -67,6 +83,13 @@ jobs:
         run: npm test --if-present
 
       - name: Validate Server Startup
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/test_db
+          PORT: 5000
+          SESSION_SECRET: ci_secret
+          JWT_SECRET: ci_secret
+          GITHUB_APP_ID: 123456
+          GITHUB_PRIVATE_KEY: "ci_mock_key"
         run: |
           echo "Validating backend startup..."
           # Start the server in the background and check if it stays up
