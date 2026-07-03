@@ -14,7 +14,7 @@
   "dependencies": {
     "@octokit/app": "^16.1.2",
     "@octokit/rest": "^22.0.1",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
