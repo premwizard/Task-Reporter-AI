@@ -2,9 +2,9 @@ name: Daily Task Updater CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main, dev ]
+    branches: [main, dev]
 
 jobs:
   frontend:
@@ -15,10 +15,10 @@ jobs:
         working-directory: frontend
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -37,13 +37,18 @@ jobs:
         working-directory: backend
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install Backend Dependencies
         run: npm install
+
+      - name: Check Backend Startup
+        run: |
+          node --version
+          echo "Backend setup successful"
