@@ -21,13 +21,13 @@ console.log("[DB Init] DATABASE_URL present:", !!dbUrl);
 console.log("[DB Init] DB_HOST present:", !!hostVal);
 console.log("[DB Init] Using connectionString:", !!connectionString);
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export const pool = new Pool(
   connectionString
     ? {
         connectionString,
-        ssl: {
-          rejectUnauthorized: false
-        }
+        ...(isProduction ? { ssl: { rejectUnauthorized: false } } : {})
       }
     : {
         user: process.env.DB_USER,
