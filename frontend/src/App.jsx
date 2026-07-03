@@ -7,8 +7,8 @@ import {
   Moon, Sun, LayoutDashboard, LogOut, FileText,
   Github, Edit3, Trash2, X, RefreshCw, Search,
   Sparkles, Copy, CheckCircle, ChevronDown, Bot,
-  LayoutGrid, List, MessageSquare, Bell, UserCircle, Menu,
-  FileSpreadsheet, Link2, Key, GitPullRequest, Globe, Zap
+  LayoutGrid, List, Bell, UserCircle, Menu,
+  FileSpreadsheet, Link2, GitPullRequest, Globe, Zap
 } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import api from './services/api';
@@ -558,6 +558,7 @@ function MainAppContent() {
 
   useEffect(() => { 
     if (user) fetchData(); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser, dateFilter, user, page]);
 
   const handleDelete = useCallback(async (id) => {
@@ -1039,6 +1040,7 @@ function AppRouting({ currentPath, navigate }) {
     if (!loading && user && (currentPath === '/login' || currentPath === '/register')) {
       navigate('/');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, currentPath]);
 
   if (currentPath.startsWith('/oauth-success')) {

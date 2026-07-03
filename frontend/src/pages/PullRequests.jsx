@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   GitPullRequest, GitMerge, GitBranch, AlertCircle, 
-  Search, Filter, Calendar, Folder, User, Sparkles, 
+  Search, Filter, Folder, User, Sparkles, 
   Clock, Plus, Minus, ArrowRight, Bot, X
 } from 'lucide-react';
 import api from '../services/api';
@@ -21,10 +21,6 @@ export default function PullRequests() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiData, setAiData] = useState(null);
 
-  useEffect(() => {
-    fetchPRs();
-  }, []);
-
   const fetchPRs = async () => {
     setLoading(true);
     try {
@@ -36,6 +32,11 @@ export default function PullRequests() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPRs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Extract unique filter elements
   const repos = useMemo(() => {

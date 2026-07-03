@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Bot, Sparkles, Copy, FileText, Download, Calendar, 
-  User, CheckCircle, RefreshCw, AlertCircle, Share2, Layers
+  Bot, Copy, FileText, Download, Calendar, 
+  User, CheckCircle, RefreshCw
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';

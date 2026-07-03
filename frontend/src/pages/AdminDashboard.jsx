@@ -7,16 +7,13 @@ import {
   CheckCircle, 
   FileSpreadsheet, 
   Search, 
-  Calendar, 
-  Filter, 
-  Download,
+  Calendar,
   Loader2,
   Bell,
   ChevronLeft,
   ChevronRight,
   TrendingUp,
-  SlidersHorizontal,
-  Bookmark
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   Chart as ChartJS,

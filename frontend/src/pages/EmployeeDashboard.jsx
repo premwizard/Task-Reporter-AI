@@ -14,7 +14,6 @@ import {
   AlertTriangle,
   X,
   PlusCircle,
-  HelpCircle,
   FolderOpen
 } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-name: Daily Task Updater CI
+name: Advanced CI Pipeline
 
 on:
   push:
@@ -6,10 +6,15 @@ on:
   pull_request:
     branches: [main, dev]
 
-jobs:
-  frontend:
-    runs-on: ubuntu-latest
+# Concurrency to cancel in-progress runs if new commits are pushed to the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
+  frontend-ci:
+    name: Frontend Build & Lint
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
@@ -18,20 +23,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Frontend Dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: npm ci
 
-      - name: Build Frontend
+      - name: Run Linter
+        run: npm run lint --if-present
+
+      - name: Build Application
         run: npm run build
 
-  backend:
+  backend-ci:
+    name: Backend Startup & Lint
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: backend
@@ -40,15 +50,34 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Install Backend Dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: npm ci
 
-      - name: Check Backend Startup
+      - name: Run Linter
+        run: npm run lint --if-present
+
+      - name: Run Tests
+        run: npm test --if-present
+
+      - name: Validate Server Startup
         run: |
-          node --version
-          echo "Backend setup successful"
+          echo "Validating backend startup..."
+          # Start the server in the background and check if it stays up
+          npm start &
+          SERVER_PID=$!
+          sleep 5
+          if ps -p $SERVER_PID > /dev/null
+          then
+             echo "Backend server started successfully and is running."
+             kill $SERVER_PID
+          else
+             echo "Backend server failed to start or crashed."
+             exit 1
+          fi

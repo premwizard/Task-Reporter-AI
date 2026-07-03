@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { 
   Bell, ShieldAlert, ShieldCheck, RefreshCw, 
-  Terminal, Globe, BookOpen, Activity, CheckCircle, ExternalLink
+  Terminal, BookOpen, Activity, CheckCircle, ExternalLink
 } from 'lucide-react';
 import api from '../services/api';
 import { getBackendBaseUrl } from '../lib/api';
