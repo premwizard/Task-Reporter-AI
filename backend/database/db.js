@@ -22,12 +22,14 @@ console.log("[DB Init] DB_HOST present:", !!hostVal);
 console.log("[DB Init] Using connectionString:", !!connectionString);
 
 const isProduction = process.env.NODE_ENV === 'production';
+const isRender = process.env.RENDER === 'true' || process.env.RENDER === true;
+const requiresSSL = isProduction || isRender || (connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1'));
 
 export const pool = new Pool(
   connectionString
     ? {
         connectionString,
-        ...(isProduction ? { ssl: { rejectUnauthorized: false } } : {})
+        ...(requiresSSL ? { ssl: { rejectUnauthorized: false } } : {})
       }
     : {
         user: process.env.DB_USER,
