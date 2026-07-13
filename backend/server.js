@@ -7,6 +7,8 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import xss from 'xss-clean';
+import hpp from 'hpp';
 
 import webhookRoutes from './routes/webhookRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
@@ -98,6 +100,12 @@ app.use(express.json({
         req.rawBody = buf;
     }
 }));
+
+// Sanitize data against XSS
+app.use(xss());
+
+// Prevent HTTP Parameter Pollution
+app.use(hpp());
 
 // STEP 3 — FIX COOKIE + SESSION CONFIG
 app.use(session({
