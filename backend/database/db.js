@@ -42,7 +42,6 @@ export const pool = new Pool(
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
-  process.exit(-1);
 });
 
 // Step 3 — Add Database Connection Test Logs
@@ -71,8 +70,8 @@ const __dirname = path.dirname(__filename);
 /**
  * Automatically read schema.sql and create tables if they do not exist.
  */
-export const initDatabase = async () => {
-  console.log("[DB Init] Starting automatic schema setup...");
+export const initDatabase = async (retries = 5) => {
+  console.log(`[DB Init] Starting automatic schema setup... (Retries left: ${retries})`);
   try {
     const schemaPath = path.join(__dirname, 'schema.sql');
     if (!fs.existsSync(schemaPath)) {
@@ -139,7 +138,12 @@ export const initDatabase = async () => {
     
     console.log("🚀 Database initialization complete and verified!");
   } catch (err) {
-    console.error("❌ Database Initialization Failure:", err);
+    console.error(`❌ Database Initialization Failure: ${err.message}`);
+    if (retries > 0) {
+      console.log(`[DB Init] Retrying in 5 seconds...`);
+      await new Promise(res => setTimeout(res, 5000));
+      return initDatabase(retries - 1);
+    }
     throw err;
   }
 };
