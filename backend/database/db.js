@@ -24,6 +24,7 @@ console.log("[DB Init] Using connectionString:", !!connectionString);
 const isProduction = process.env.NODE_ENV === 'production';
 const isLocalhost = connectionString && (connectionString.includes('localhost') || connectionString.includes('127.0.0.1'));
 const isRenderInternal = connectionString && connectionString.includes('dpg-') && !connectionString.includes('.render.com');
+const isRailway = connectionString && connectionString.includes('.rlwy.net');
 
 // Allow explicit override via DB_SSL environment variable
 const explicitSSL = process.env.DB_SSL === 'true' || process.env.DB_SSL === '1';
@@ -31,7 +32,8 @@ const explicitNoSSL = process.env.DB_SSL === 'false' || process.env.DB_SSL === '
 
 // Default to SSL for all remote connections (Neon, Supabase, AWS, Render External).
 // Render Internal URLs uniquely require NO SSL, and localhost doesn't need it.
-const requiresSSL = explicitSSL || (!explicitNoSSL && connectionString && !isLocalhost && !isRenderInternal);
+// Railway (rlwy.net) TCP proxy explicitly drops SSL connections, so we must exclude it.
+const requiresSSL = explicitSSL || (!explicitNoSSL && connectionString && !isLocalhost && !isRenderInternal && !isRailway);
 
 if (connectionString) {
   try {
