@@ -25,9 +25,22 @@ const isProduction = process.env.NODE_ENV === 'production';
 const isLocalhost = connectionString && (connectionString.includes('localhost') || connectionString.includes('127.0.0.1'));
 const isRenderInternal = connectionString && connectionString.includes('dpg-') && !connectionString.includes('.render.com');
 
+// Allow explicit override via DB_SSL environment variable
+const explicitSSL = process.env.DB_SSL === 'true' || process.env.DB_SSL === '1';
+const explicitNoSSL = process.env.DB_SSL === 'false' || process.env.DB_SSL === '0';
+
 // Default to SSL for all remote connections (Neon, Supabase, AWS, Render External).
 // Render Internal URLs uniquely require NO SSL, and localhost doesn't need it.
-const requiresSSL = connectionString && !isLocalhost && !isRenderInternal;
+const requiresSSL = explicitSSL || (!explicitNoSSL && connectionString && !isLocalhost && !isRenderInternal);
+
+if (connectionString) {
+  try {
+    const parsedUrl = new URL(connectionString);
+    console.log(`[DB Init] Connecting to Host: ${parsedUrl.hostname}, Port: ${parsedUrl.port}, SSL Enforced: ${requiresSSL}`);
+  } catch (e) {
+    console.log(`[DB Init] Could not parse connection string for debugging.`);
+  }
+}
 
 export const pool = new Pool(
   connectionString
