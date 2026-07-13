@@ -22,8 +22,12 @@ console.log("[DB Init] DB_HOST present:", !!hostVal);
 console.log("[DB Init] Using connectionString:", !!connectionString);
 
 const isProduction = process.env.NODE_ENV === 'production';
-// Render internal URLs (e.g. dpg-xxx) drop SSL connections. Only use SSL for external Render URLs or Supabase.
-const requiresSSL = connectionString && (connectionString.includes('.render.com') || connectionString.includes('.supabase.co') || connectionString.includes('.amazonaws.com'));
+const isLocalhost = connectionString && (connectionString.includes('localhost') || connectionString.includes('127.0.0.1'));
+const isRenderInternal = connectionString && connectionString.includes('dpg-') && !connectionString.includes('.render.com');
+
+// Default to SSL for all remote connections (Neon, Supabase, AWS, Render External).
+// Render Internal URLs uniquely require NO SSL, and localhost doesn't need it.
+const requiresSSL = connectionString && !isLocalhost && !isRenderInternal;
 
 export const pool = new Pool(
   connectionString
