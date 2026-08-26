@@ -29,10 +29,6 @@ const isRailway = connectionString && connectionString.includes('.rlwy.net');
 // Allow explicit override via DB_SSL environment variable
 const explicitSSL = process.env.DB_SSL === 'true' || process.env.DB_SSL === '1';
 const explicitNoSSL = process.env.DB_SSL === 'false' || process.env.DB_SSL === '0';
-
-// Default to SSL for all remote connections (Neon, Supabase, AWS, Render External).
-// Render Internal URLs uniquely require NO SSL, and localhost doesn't need it.
-// Railway (rlwy.net) TCP proxy explicitly drops SSL connections, so we must exclude it.
 const requiresSSL = explicitSSL || (!explicitNoSSL && connectionString && !isLocalhost && !isRenderInternal && !isRailway);
 
 if (connectionString) {
