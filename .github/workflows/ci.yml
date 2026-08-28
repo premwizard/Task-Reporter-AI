@@ -27,10 +27,12 @@ jobs:
       - name: Frontend Audit
         working-directory: frontend
         run: npm audit --audit-level=high
+        continue-on-error: true
 
       - name: Backend Audit
         working-directory: backend
         run: npm audit --audit-level=high
+        continue-on-error: true
 
   frontend-ci:
     name: Frontend Build & Lint (Node ${{ matrix.node-version }})

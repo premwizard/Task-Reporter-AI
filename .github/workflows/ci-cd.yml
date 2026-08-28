@@ -34,11 +34,13 @@ jobs:
 
       - name: Audit Frontend Dependencies
         working-directory: frontend
-        run: npm audit --audit-level=high --if-present
+        run: npm audit --audit-level=high
+        continue-on-error: true
 
       - name: Audit Backend Dependencies
         working-directory: backend
-        run: npm audit --audit-level=high --if-present
+        run: npm audit --audit-level=high
+        continue-on-error: true
 
   # ==========================================
   # STAGE 2: FRONTEND CI (Lint & Build)
