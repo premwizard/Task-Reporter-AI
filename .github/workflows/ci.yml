@@ -40,7 +40,7 @@ jobs:
     needs: security-audit
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
     defaults:
       run:
         working-directory: frontend
@@ -79,11 +79,11 @@ jobs:
     needs: security-audit
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -129,16 +129,24 @@ jobs:
           GITHUB_APP_ID: 123456
           GITHUB_PRIVATE_KEY: "ci_mock_key"
         run: |
-          echo "Validating backend startup..."
-          # Start the server in the background and check if it stays up
-          npm start &
+          echo "Validating backend server startup..."
+          node server.js &
           SERVER_PID=$!
-          sleep 5
-          if ps -p $SERVER_PID > /dev/null
-          then
-             echo "Backend server started successfully and is running."
-             kill $SERVER_PID
+          SUCCESS=0
+          for i in {1..30}; do
+            if curl -s http://localhost:5000/health | grep -q "healthy"; then
+              echo "Backend server started successfully and is healthy."
+              SUCCESS=1
+              break
+            fi
+            sleep 1
+          done
+
+          if [ $SUCCESS -eq 1 ]; then
+            kill $SERVER_PID || true
+            exit 0
           else
-             echo "Backend server failed to start or crashed."
-             exit 1
+            echo "Backend server health check failed or timed out."
+            kill $SERVER_PID || true
+            exit 1
           fi
