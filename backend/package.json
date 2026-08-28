@@ -29,7 +29,7 @@
     "node-cron": "^4.2.1",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
-    "pdfkit": "^0.18.0",
+    "pdfkit": "^0.20.1",
     "pg": "^8.11.5",
     "socket.io": "^4.8.3",
     "xlsx": "^0.18.5",
