@@ -33,6 +33,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust reverse proxy (Render, Cloudflare, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Create HTTP server (required for Socket.IO)
 const httpServer = http.createServer(app);
 
@@ -101,8 +104,29 @@ app.use(express.json({
     }
 }));
 
-// Sanitize data against XSS
-app.use(xss());
+// Sanitize data against XSS safely (supports both Express 4 and Express 5 getter-only req.query)
+const xssMiddleware = xss();
+app.use((req, res, next) => {
+    try {
+        xssMiddleware(req, res, next);
+    } catch (err) {
+        if (req.body && typeof req.body === 'object') {
+            for (const key of Object.keys(req.body)) {
+                if (typeof req.body[key] === 'string') {
+                    req.body[key] = req.body[key].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                }
+            }
+        }
+        if (req.query && typeof req.query === 'object') {
+            for (const key of Object.keys(req.query)) {
+                if (typeof req.query[key] === 'string') {
+                    req.query[key] = req.query[key].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                }
+            }
+        }
+        next();
+    }
+});
 
 // Prevent HTTP Parameter Pollution
 app.use(hpp());
@@ -213,6 +237,18 @@ app.get('/api/status', async (req, res) => {
 
 app.get('/', (req, res) => {
     res.send('AI-Powered GitHub Engineering Intelligence API is running...');
+});
+
+// Global error handling middleware
+app.use((err, req, res, next) => {
+    console.error(`❌ [Server Error] ${req.method} ${req.originalUrl}:`, err);
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(err.status || 500).json({
+        success: false,
+        error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : (err.message || 'Internal Server Error')
+    });
 });
 
 // Start Server

@@ -18,26 +18,31 @@ router.post('/login', login);
 
 // GET /auth/github/start -> Unified Combined Entrypoint Route (Step 2)
 router.get('/github/start', (req, res, next) => {
-  console.log("\n🚀 [Combined Auth Start] Initiating Unified Onboarding OAuth Flow");
-  console.log("====================================");
-  
-  // Generate secure temporary session state
-  const onboardingSessionId = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
-  const stateObj = {
-    onboarding_session: onboardingSessionId,
-    redirect_intent: 'dashboard',
-    timestamp: Date.now()
-  };
-  
-  const encodedState = Buffer.from(JSON.stringify(stateObj)).toString('base64');
-  console.log("Generated secure state:", stateObj);
-  console.log("Encoded state payload:", encodedState);
-  console.log("====================================\n");
+  try {
+    console.log("\n🚀 [Combined Auth Start] Initiating Unified Onboarding OAuth Flow");
+    console.log("====================================");
+    
+    // Generate secure temporary session state
+    const onboardingSessionId = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
+    const stateObj = {
+      onboarding_session: onboardingSessionId,
+      redirect_intent: 'dashboard',
+      timestamp: Date.now()
+    };
+    
+    const encodedState = Buffer.from(JSON.stringify(stateObj)).toString('base64');
+    console.log("Generated secure state:", stateObj);
+    console.log("Encoded state payload:", encodedState);
+    console.log("====================================\n");
 
-  passport.authenticate('github', { 
-    scope: ['repo', 'admin:repo_hook', 'read:user', 'user:email'],
-    state: encodedState
-  })(req, res, next);
+    passport.authenticate('github', { 
+      scope: ['repo', 'admin:repo_hook', 'read:user', 'user:email'],
+      state: encodedState
+    })(req, res, next);
+  } catch (err) {
+    console.error("❌ [Combined Auth Start Error]:", err);
+    next(err);
+  }
 });
 
 // GET /auth/github -> Legacy fallback, redirects directly to start
